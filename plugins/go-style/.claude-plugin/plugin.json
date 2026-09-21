@@ -1,0 +1,9 @@
+{
+  "name": "go-style",
+  "description": "Go coding-style checks (gofmt/goimports/go vet/golangci-lint + banword scan + NAK lens + gRPC lens) for opted-in Go repositories, with pre-commit/commit-msg hooks",
+  "version": "1.2.0",
+  "author": { "name": "Reinaldo Saraiva" },
+  "homepage": "https://github.com/reinaldosaraiva/go-skills",
+  "license": "MIT",
+  "keywords": ["go", "golang", "grpc", "lint", "code-style", "code-review", "git-hooks"]
+}

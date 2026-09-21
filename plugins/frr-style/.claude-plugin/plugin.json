@@ -1,0 +1,9 @@
+{
+  "name": "frr-style",
+  "description": "FRRouting coding-style checks for local forks of FRRouting/frr: commit format, Signed-off-by, tabs, trailing whitespace, upstream-submit strict mode and maintainer NAK lens",
+  "version": "1.0.0",
+  "author": { "name": "Reinaldo Saraiva" },
+  "homepage": "https://github.com/reinaldosaraiva/go-skills",
+  "license": "MIT",
+  "keywords": ["frr", "frrouting", "c", "code-style", "code-review", "git-hooks"]
+}

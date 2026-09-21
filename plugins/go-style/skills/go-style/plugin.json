@@ -1,0 +1,27 @@
+{
+  "name": "go-style",
+  "description": "Go coding-style checks (mechanical + banword + NAK lens + gRPC lens) for opted-in Go repositories",
+  "version": "1.2.0",
+  "triggers": {
+    "files": [
+      "*.go",
+      "go.mod",
+      "go.sum"
+    ],
+    "commands": [
+      "/go-style"
+    ]
+  },
+  "tools": [
+    "Bash",
+    "Read",
+    "Edit"
+  ],
+  "modes": {
+    "default": "full range: all commits in merge-base..HEAD + full diff",
+    "staged": "staged diff only; commit-msg checks skipped",
+    "commit-msg": "the message being composed; diff checks skipped"
+  },
+  "scope": "baseline-only (no strict upstream-submit equivalent for this repo)",
+  "repo_config_expected": ".golangci.yml alongside go.mod in the opted-in repo; optional .go-style-banwords at the repo root"
+}

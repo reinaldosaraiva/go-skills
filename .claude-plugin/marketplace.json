@@ -1,0 +1,24 @@
+{
+  "name": "go-skills",
+  "owner": { "name": "Reinaldo Saraiva" },
+  "description": "Claude Code skills for Go and FRRouting code style: mechanical lint, banword scan, NAK lens, gRPC lens and git hooks",
+  "version": "1.0.0",
+  "plugins": [
+    {
+      "name": "go-style",
+      "source": "./plugins/go-style",
+      "description": "Go coding-style checks (gofmt/goimports/go vet/golangci-lint + banword scan + NAK lens + gRPC lens) for opted-in Go repositories, with pre-commit/commit-msg hooks",
+      "version": "1.2.0",
+      "author": { "name": "Reinaldo Saraiva" },
+      "license": "MIT"
+    },
+    {
+      "name": "frr-style",
+      "source": "./plugins/frr-style",
+      "description": "FRRouting coding-style checks for local forks of FRRouting/frr: commit format, Signed-off-by, tabs, trailing whitespace, upstream-submit strict mode and maintainer NAK lens",
+      "version": "1.0.0",
+      "author": { "name": "Reinaldo Saraiva" },
+      "license": "MIT"
+    }
+  ]
+}

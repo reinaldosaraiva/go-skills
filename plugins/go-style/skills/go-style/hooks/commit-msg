@@ -1,0 +1,55 @@
+#!/bin/bash
+# go-style commit-msg hook
+set -euo pipefail
+
+MSG_FILE="$1"
+MSG=$(cat "$MSG_FILE")
+
+ERR=0
+
+echo "[go-style] commit-msg check..."
+
+# Conventional commit format (loose — allows feat/docs/fix/feat/refactor/test/chore)
+if ! echo "$MSG" | head -1 | grep -qE '^(feat|fix|docs|style|refactor|test|chore|ci|build)(\([^)]+\))?: .+'; then
+    echo "FAIL: commit subject does not match conventional commit format"
+    echo "Expected: type(scope?): subject"
+    echo "Types: feat, fix, docs, style, refactor, test, chore, ci, build"
+    ERR=1
+fi
+
+# Subject length ≤ 72
+SUBJ_LEN=$(echo "$MSG" | head -1 | wc -c)
+if [ "$SUBJ_LEN" -gt 73 ]; then
+    echo "FAIL: commit subject is $SUBJ_LEN chars (limit 72)"
+    ERR=1
+fi
+
+# Blank line after subject — only required for multi-line messages.
+LINE_COUNT=$(echo "$MSG" | wc -l | tr -d ' ')
+if [ "$LINE_COUNT" -gt 1 ]; then
+    if ! echo "$MSG" | sed -n '2p' | grep -qE '^$'; then
+        echo "FAIL: missing blank line after subject line"
+        ERR=1
+    fi
+fi
+
+# Overclaiming banwords
+OVER=$(echo "$MSG" | grep -Ei 'perfect|flawless|guaranteed|zero bugs|100% correct' || true)
+if [ -n "$OVER" ]; then
+    echo "FAIL: overclaiming in commit message: $OVER"
+    ERR=1
+fi
+
+# TODO without issue ref
+TODO_BAD=$(echo "$MSG" | grep -Ei 'TODO[^(]' || true)
+if [ -n "$TODO_BAD" ]; then
+    echo "WARN: TODO without issue reference in commit: $TODO_BAD"
+fi
+
+if [ "$ERR" -eq 0 ]; then
+    echo "[go-style] commit-msg PASS"
+else
+    echo "[go-style] commit-msg FAIL"
+fi
+
+exit $ERR

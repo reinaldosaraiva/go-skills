@@ -1,0 +1,72 @@
+#!/bin/bash
+# go-style pre-commit hook (installed by scripts/install-hooks.sh)
+set -euo pipefail
+
+STAGED_GO=$(git diff --cached --name-only --diff-filter=ACM | grep '\.go$' || true)
+[[ -z "$STAGED_GO" ]] && exit 0
+
+echo "[go-style] Checking staged Go files..."
+
+# Mechanical: gofmt
+echo "[go-style] gofmt..."
+if gofmt -l $STAGED_GO | grep -q .; then
+    echo "FAIL: gofmt pending on:"
+    gofmt -l $STAGED_GO
+    exit 1
+fi
+
+# Mechanical: goimports (if available)
+if command -v goimports >/dev/null 2>&1; then
+    echo "[go-style] goimports..."
+    if goimports -l $STAGED_GO | grep -q .; then
+        echo "FAIL: goimports pending on:"
+        goimports -l $STAGED_GO
+        exit 1
+    fi
+fi
+
+# Per-module lint: walk up from each staged .go file to find its go.mod
+REPO_ROOT=$(git rev-parse --show-toplevel)
+MODULE_ROOTS=$(for f in $STAGED_GO; do
+    d=$(dirname "$REPO_ROOT/$f")
+    while [ "$d" != "/" ] && [ "$d" != "$REPO_ROOT/.." ]; do
+        if [ -f "$d/go.mod" ]; then echo "$d"; break; fi
+        d=$(dirname "$d")
+    done
+done | sort -u)
+
+if [ -z "$MODULE_ROOTS" ]; then
+    echo "[go-style] WARN: no go.mod found for any staged Go file — skipping go vet and golangci-lint"
+else
+    # pre-commit scope: only lines in staged diff vs HEAD (not merge-base — would
+    # re-flag pre-existing issues on long-lived branches). Manual /go-style can
+    # pass a different base via MERGE_BASE env var.
+    NEW_FROM="${MERGE_BASE:-HEAD}"
+    for mod in $MODULE_ROOTS; do
+        echo "[go-style] go vet (module: ${mod#$REPO_ROOT/})..."
+        (cd "$mod" && go vet ./...) || { echo "FAIL: go vet in $mod"; exit 1; }
+
+        if command -v golangci-lint >/dev/null 2>&1; then
+            echo "[go-style] golangci-lint (module: ${mod#$REPO_ROOT/})..."
+            (cd "$mod" && golangci-lint run --new-from-rev="$NEW_FROM" ./...) || { echo "FAIL: golangci-lint in $mod"; exit 1; }
+        fi
+    done
+fi
+
+# Banword scan — resolved relative to this hook (symlinks followed), so the
+# skill can live in any host directory (P061-S003, no hardcoded home).
+echo "[go-style] banword scan..."
+SCRIPT="$BASH_SOURCE"
+while [ -L "$SCRIPT" ]; do
+    DIR=$(cd -P "$(dirname "$SCRIPT")" && pwd)
+    NEXT=$(readlink "$SCRIPT")
+    case "$NEXT" in
+        /*) SCRIPT="$NEXT" ;;
+        *)  SCRIPT="$DIR/$NEXT" ;;
+    esac
+done
+SKILL_DIR=$(cd -P "$(dirname "$SCRIPT")/.." && pwd)
+bash "$SKILL_DIR/hooks/banword-scan.sh" "$STAGED_GO" || exit 1
+
+echo "[go-style] PASS"
+exit 0

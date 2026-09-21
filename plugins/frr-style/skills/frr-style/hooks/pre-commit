@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# pre-commit hook wrapper — runs the frr-style lint in --staged mode.
+# The lint is resolved RELATIVE TO THIS HOOK (symlinks followed) — no
+# hardcoded home (P061-S003). A missing lint fails OPEN (exit 0), never
+# blocks a commit with a broken wrapper.
+# Exit-code policy: WARN (1) never blocks; only FAIL (2) does.
+SCRIPT="$BASH_SOURCE"
+while [ -L "$SCRIPT" ]; do
+  DIR=$(cd -P "$(dirname "$SCRIPT")" && pwd)
+  NEXT=$(readlink "$SCRIPT")
+  case "$NEXT" in
+    /*) SCRIPT="$NEXT" ;;
+    *)  SCRIPT="$DIR/$NEXT" ;;
+  esac
+done
+SKILL_DIR=$(cd -P "$(dirname "$SCRIPT")/.." && pwd)
+LINT="$SKILL_DIR/checks/frr-style-lint.sh"
+[ -f "$LINT" ] || exit 0
+bash "$LINT" --staged
+rc=$?
+[ "$rc" -eq 1 ] && exit 0
+exit "$rc"
