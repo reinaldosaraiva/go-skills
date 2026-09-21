@@ -7,7 +7,7 @@ portable script that silently no-ops outside its target repositories.
 
 | Skill | Target | What it checks |
 |---|---|---|
-| `go-style` | Any Go repo that opts in | gofmt, goimports, `go vet`, `golangci-lint` (default set + the repo's own `.golangci.yml`), banword scan, NAK idioms (`rules/nak.md`), gRPC lens (`rules/grpc.md`), conventional-commit subject rules |
+| `go-style` | Any Go repo that opts in | gofmt, goimports, `go vet`, `golangci-lint` (default set + the repo's own `.golangci.yml`), banword scan, NAK idioms (`rules/nak.md`), gRPC lens (`rules/grpc.md`) with its precedent ledger (`rules/grpc-references.md`: gRIBI, gNMI, I2RS RFCs, vendor route APIs, papers), conventional-commit subject rules |
 | `frr-style` | Local forks of `FRRouting/frr` | `subsystem: summary` subject, 72-col limit, `Signed-off-by`, tabs in `.c/.h`, trailing whitespace; strict mode on `upstream-submit/*` branches adds single-commit, subsystem-scope and DOC-block checks plus a maintainer NAK lens |
 
 ## Install

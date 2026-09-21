@@ -6,6 +6,8 @@ southbound adapter talking to a C++ gRPC server with leases, durable commit
 outcomes and bounded state reads) and from published API precedents (gRIBI
 election/persistence/acknowledgment semantics, gNMI, vendor route services).
 These are transport-shape rules; they do not prescribe a domain model.
+The precedent behind each rule, and the claims the review rejected, are in
+`rules/grpc-references.md`.
 
 Legend:
 - **[enforced]** — mechanical (`golangci-lint` default set, `go vet`).

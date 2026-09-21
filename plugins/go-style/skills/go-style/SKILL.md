@@ -176,6 +176,7 @@ Exit code (skill-level report):
 - `rules/banword.md` — banword list with regex patterns
 - `rules/nak.md` — NAK idioms checklist for Go (enforced vs advisory)
 - `rules/grpc.md` — gRPC lens: transport-shape rules for modules that require `google.golang.org/grpc`
+- `rules/grpc-references.md` — precedents (gRIBI, gNMI, I2RS RFCs, vendor route APIs, papers) behind each gRPC rule, plus rejected claims
 - `hooks/pre-commit` — mechanical + banword inline; delegated to by repo wrapper
 - `hooks/commit-msg` — overclaiming + conventional commit scan
 - `hooks/banword-scan.sh` — grep-based scanner invoked by pre-commit
